@@ -1,0 +1,45 @@
+ARG RUBY_VERSION=3.4.2
+ARG NODE_VERSION=20.10.0
+
+# Use Node image so we can pull the binaries from here.
+FROM node:$NODE_VERSION as node
+
+# Ruby build image.
+FROM ruby:${RUBY_VERSION}-slim
+
+RUN apt-get update -qq && \
+    apt-get install -y build-essential libssl-dev libpq-dev vim git libsasl2-dev curl libyaml-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy node binaries from node image.
+COPY --from=node /usr/local /usr/local
+COPY --from=node /opt /opt
+
+# Setup environment variables.
+ENV WORK_ROOT /src
+ENV APP_HOME $WORK_ROOT/app/
+ENV LANG C.UTF-8
+
+# Create app directory.
+RUN mkdir -p $APP_HOME
+
+# Setup work directory.
+WORKDIR $APP_HOME
+
+RUN gem install foreman bundler
+
+# Install application gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install -j 4 && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    bundle exec bootsnap precompile --gemfile
+
+# Copy application code
+COPY . .
+
+# Entrypoint prepares the database.
+ENTRYPOINT ["./bin/docker-entrypoint"]
+
+# Start the server by default, this can be overwritten at runtime
+EXPOSE 3000
+CMD ["./bin/dev"]
