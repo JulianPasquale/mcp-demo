@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  visited_city: one
+  travel_date: 2025-04-19 18:01:10
+  rating: MyString
+
+two:
+  visited_city: two
+  travel_date: 2025-04-19 18:01:10
+  rating: MyString

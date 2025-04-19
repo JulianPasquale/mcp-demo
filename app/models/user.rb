@@ -6,6 +6,11 @@ class User < ApplicationRecord
 
   validates :email_address, presence: true, uniqueness: true
 
+  # Visits
+  has_many :visited_countries, dependent: :destroy
+  has_many :visited_cities, through: :visited_countries
+  has_many :touristic_visits, dependent: :destroy
+
   def generate_api_token
     loop do
       self.api_token = SecureRandom.hex(32)
