@@ -15,8 +15,7 @@ module FastMcp
 
       def handle_mcp_request(request, env)
         if !exempt_from_auth?(request.path)
-          auth_header = request.env["HTTP_#{@auth_header_name.upcase.gsub('-', '_')}"]
-          token = auth_header&.gsub('Bearer ', '')
+          token = find_token_in_header(request) || find_token_in_params(request)
 
           return unauthorized_response(request) if token.blank?
 
@@ -33,6 +32,16 @@ module FastMcp
       end
 
       private
+
+      def find_token_in_header(request)
+        auth_header = request.env["HTTP_#{@auth_header_name.upcase.gsub('-', '_')}"]
+
+        auth_header&.gsub('Bearer ', '')
+      end
+
+      def find_token_in_params(request)
+        request.params['auth_token']
+      end
 
       def exempt_from_auth?(path)
         @auth_exempt_paths.any? { |exempt_path| path.start_with?(exempt_path) }

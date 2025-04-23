@@ -56,7 +56,7 @@ mount_in_rails(
   name: Rails.application.class.module_parent_name.underscore.dasherize,
   version: '1.0.0',
   path_prefix: '/mcp', # This is the default path prefix
-  messages_route: 'messages', # This is the default route for the messages endpoint
+  messages_route: 'messages',
   sse_route: 'sse', # This is the default route for the SSE endpoint
   # Add allowed origins below, it defaults to Rails.application.config.hosts
   # allowed_origins: ['localhost', '127.0.0.1', 'example.com', /.*\.example\.com/],
