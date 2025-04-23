@@ -16,8 +16,10 @@ class RecordVisitTool < ApplicationTool
     # Get the current user (logged in user)
     user = Current.user
 
-    visited_country = VisitedCountry.find_or_create_by(code: visited_country_code, name: visited_country_name)
-    visited_city = VisitedCity.find_or_create_by(name: visited_city_name, visited_country: visited_country)
+    visited_country = VisitedCountry.find_or_create_by!(
+      country_code: visited_country_code, name: visited_country_name, user_id: user.id
+      )
+    visited_city = VisitedCity.find_or_create_by!(name: visited_city_name, visited_country_id: visited_country.id)
 
     touristic_visit = TouristicVisit.create(
       user: user,
